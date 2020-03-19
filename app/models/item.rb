@@ -4,4 +4,6 @@ class Item < ApplicationRecord
                       :unit_price
 
   validates_numericality_of :unit_price
+
+  belongs_to :merchant
 end
