@@ -25,7 +25,7 @@ class Api::V1::MerchantsController < ApplicationController
    private
 
     def merchant_params
-      params.require(:merchant).permit(:name)
+      params.permit(:name)
     end
 
 

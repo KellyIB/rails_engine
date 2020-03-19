@@ -32,7 +32,7 @@ RSpec.describe "Items API" do
   it "can create a new item" do
     item_params = { name: "Wooden Tub", description: "Won't last long, but it's ecofriendly!", unit_price: "47", merchant_id: @merchant.id }
 # binding.pry
-    post "/api/v1/items", params: {item: item_params }
+    post "/api/v1/items", params: item_params
     item = Item.last
 
     expect(response).to be_successful
@@ -44,7 +44,7 @@ RSpec.describe "Items API" do
     previous_name = Item.last.name
     item_params = { name: "Bolder Holder"}
 
-    put "/api/v1/items/#{id}", params: {item: item_params}
+    put "/api/v1/items/#{id}", params: item_params
     item = Item.find_by(id: id)
 
     expect(response).to be_successful
