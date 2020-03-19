@@ -9,9 +9,9 @@ RSpec.describe "Items API" do
      item2 = create(:item, merchant_id: @merchant.id)
      item3 = create(:item, merchant_id: @merchant.id)
 
-      get '/api/v1/items'
+    get '/api/v1/items'
 
-     expect(response).to be_successful
+    expect(response).to be_successful
 
     items = JSON.parse(response.body)
 
