@@ -43,7 +43,7 @@ describe "Merchants API" do
     expect(merchant.name).to eq("Drip Dries")
   end
 
-  it "can destroy an item" do
+  it "can destroy an merchant" do
      merchant_id = create(:merchant).id
 
     expect(Merchant.count).to eq(1)
@@ -53,5 +53,22 @@ describe "Merchants API" do
     expect(response).to be_successful
     expect(Merchant.count).to eq(0)
     expect{Merchant.find(merchant_id)}.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  xit "can list all of a merchants items" do
+     merchant_id = create(:merchant).id
+     10.times do
+       create(:item, merchant_id: merchant.id)
+     end
+
+    expect(Merchant.items.count).to eq(10)
+
+    get "/api/v1/merchants/#{merchant_id}/items"
+
+    expect(response).to be_successful
+
+    items = JSON.parse(response.body)
+
+    expect(items).to eq(Merchant.items)
   end
 end
