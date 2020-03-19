@@ -1,10 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe "Items API" do
+  before :each do
+    @merchant = create(:merchant)
+  end
   it 'send a list of items' do
-     bob = create_list(:item, 3)
+     item1 = create(:item, merchant_id: @merchant.id)
+     item2 = create(:item, merchant_id: @merchant.id)
+     item3 = create(:item, merchant_id: @merchant.id)
 
-     get '/api/v1/items'
+      get '/api/v1/items'
 
      expect(response).to be_successful
 
@@ -14,7 +19,7 @@ RSpec.describe "Items API" do
   end
 
   it "can get one item by its id" do
-    id = create(:item).id
+    id = create(:item, merchant_id: @merchant.id).id
 
     get "/api/v1/items/#{id}"
 
@@ -25,9 +30,9 @@ RSpec.describe "Items API" do
   end
 
   it "can create a new item" do
-    item_params = { name: "Wooden Tub", description: "Won't last long, but it's ecofriendly!", unit_price: "47" }
-
-    post "/api/v1/items", params: {item: item_params}
+    item_params = { name: "Wooden Tub", description: "Won't last long, but it's ecofriendly!", unit_price: "47", merchant_id: @merchant.id }
+# binding.pry
+    post "/api/v1/items", params: {item: item_params }
     item = Item.last
 
     expect(response).to be_successful
@@ -35,7 +40,7 @@ RSpec.describe "Items API" do
   end
 
   it "can update an existing item" do
-    id = create(:item).id
+    id = create(:item, merchant_id: @merchant.id).id
     previous_name = Item.last.name
     item_params = { name: "Bolder Holder"}
 
@@ -48,7 +53,7 @@ RSpec.describe "Items API" do
   end
 
   it "can destroy an item" do
-    item = create(:item)
+    item = create(:item, merchant_id: @merchant.id)
 
     expect(Item.count).to eq(1)
 
