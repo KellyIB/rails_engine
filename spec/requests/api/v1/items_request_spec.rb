@@ -9,13 +9,13 @@ RSpec.describe "Items API" do
      item2 = create(:item, merchant_id: @merchant.id)
      item3 = create(:item, merchant_id: @merchant.id)
 
-      get '/api/v1/items'
+    get '/api/v1/items'
 
-     expect(response).to be_successful
+    expect(response).to be_successful
 
     items = JSON.parse(response.body)
 
-    expect(items.count).to eq(3)
+    expect(items["data"].count).to eq(3)
   end
 
   it "can get one item by its id" do
@@ -26,13 +26,13 @@ RSpec.describe "Items API" do
     item = JSON.parse(response.body)
 
     expect(response).to be_successful
-    expect(item["id"]).to eq(id)
+    expect(item["data"]["id"]).to eq(id.to_s)
   end
 
   it "can create a new item" do
     item_params = { name: "Wooden Tub", description: "Won't last long, but it's ecofriendly!", unit_price: "47", merchant_id: @merchant.id }
 # binding.pry
-    post "/api/v1/items", params: {item: item_params }
+    post "/api/v1/items", params: item_params
     item = Item.last
 
     expect(response).to be_successful
@@ -44,7 +44,7 @@ RSpec.describe "Items API" do
     previous_name = Item.last.name
     item_params = { name: "Bolder Holder"}
 
-    put "/api/v1/items/#{id}", params: {item: item_params}
+    put "/api/v1/items/#{id}", params: item_params
     item = Item.find_by(id: id)
 
     expect(response).to be_successful
