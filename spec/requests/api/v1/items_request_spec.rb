@@ -64,4 +64,18 @@ RSpec.describe "Items API" do
     expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
   end
 
+
+  xit "can find the merchant an item belongs to" do
+    item = create(:item, merchant_id: @merchant.id)
+
+
+    get "/api/v1/items/#{item.id}/merchant"
+
+    expect(response).to be_successful
+
+    merchant = JSON.parse(response.body)
+
+    expect(merchant).to eq(@merchant)
+  end
+
 end
