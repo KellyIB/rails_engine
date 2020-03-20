@@ -40,16 +40,19 @@ RSpec.describe "Items API" do
   end
 
   it "can update an existing item" do
+    first_item = create(:item, merchant_id: @merchant.id)
     id = create(:item, merchant_id: @merchant.id).id
     previous_name = Item.last.name
+
     item_params = { name: "Bolder Holder"}
 
     put "/api/v1/items/#{id}", params: item_params
-    item = Item.find_by(id: id)
-
+    item = Item.find(id)
+    
     expect(response).to be_successful
     expect(item.name).to_not eq(previous_name)
     expect(item.name).to eq("Bolder Holder")
+    expect(first_item.name).to_not eq("Bolder Holder")
   end
 
   it "can destroy an item" do
