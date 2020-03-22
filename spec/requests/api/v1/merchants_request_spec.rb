@@ -62,20 +62,22 @@ describe "Merchants API" do
     expect{Merchant.find(merchant_id)}.to raise_error(ActiveRecord::RecordNotFound)
   end
 
-  xit "can list all of a merchants items" do
-     merchant_id = create(:merchant).id
+  it "can list all of a merchants items" do
+     merchant = create(:merchant)
      10.times do
        create(:item, merchant_id: merchant.id)
      end
 
-    expect(Merchant.items.count).to eq(10)
 
-    get "/api/v1/merchants/#{merchant_id}/items"
+    expect(merchant.items.count).to eq(10)
+
+    get "/api/v1/merchants/#{merchant.id}/items"
 
     expect(response).to be_successful
-
     items = JSON.parse(response.body)
 
-    expect(items).to eq(Merchant.items)
+    expect(items["data"].count).to eq(merchant.items.count)
+    expect(items["data"][0]["id"].to_i).to eq(merchant.items.first.id)
+    expect(items["data"][9]["id"].to_i).to eq(merchant.items.last.id)
   end
 end

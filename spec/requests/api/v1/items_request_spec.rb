@@ -48,7 +48,7 @@ RSpec.describe "Items API" do
 
     put "/api/v1/items/#{id}", params: item_params
     item = Item.find(id)
-    
+
     expect(response).to be_successful
     expect(item.name).to_not eq(previous_name)
     expect(item.name).to eq("Bolder Holder")
@@ -67,10 +67,8 @@ RSpec.describe "Items API" do
     expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
   end
 
-
-  xit "can find the merchant an item belongs to" do
+  it "can find the merchant an item belongs to" do
     item = create(:item, merchant_id: @merchant.id)
-
 
     get "/api/v1/items/#{item.id}/merchant"
 
@@ -78,7 +76,8 @@ RSpec.describe "Items API" do
 
     merchant = JSON.parse(response.body)
 
-    expect(merchant).to eq(@merchant)
+    expect(response).to be_successful
+    expect(merchant["data"]["id"]).to eq(@merchant.id.to_s)
   end
 
 end
