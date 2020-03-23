@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Merchants API" do
+RSpec.describe "Merchants API" do
   it "sends a list of merchants" do
     Merchant.delete_all
     create_list(:merchant, 3)
@@ -112,21 +112,27 @@ describe "Merchants API" do
     expect(names.sort).to eq(["Boromire", "Doromire", "Foromor", "Toro"])
   end
 
-  xit 'can find the first merchant that contain a fragment, case insensitive' do
+  it 'can find the first merchant that contain a fragment, case insensitive' do
+    Merchant.delete_all
+    merchant1 = Merchant.create(name: "Toro")
+    merchant2 = Merchant.create(name: "Bordo")
+    merchant3 = Merchant.create(name: "Foromor")
+    merchant4 = Merchant.create(name: "Boromire")
+    merchant5 = Merchant.create(name: "Born")
+    merchant6 = Merchant.create(name: "Bord")
+    merchant7 = Merchant.create(name: "Borimor")
+    merchant8 = Merchant.create(name: "Doromire")
 
-    expect(Merchant.all.count).to eq(10)
+    expect(Merchant.all.count).to eq(8)
 
-    get "/api/v1/merchants/find_all?name=oro"
+    get "/api/v1/merchants/find?name=oro"
 
     expect(response).to be_successful
-    merchants = JSON.parse(response.body)
+    merchant = JSON.parse(response.body)
 
-    expect(merchants["data"].count).to eq(1)
-    expect(merchants["data"][0]["id"].to_i).to eq(@merchant1.id)
-
-    names = merchants.map {|merchant|merchant[:attributes][:name]}
-
-    expect(names.sort).to eq(["Toro"])
+    expect(merchant["data"].count).to eq(1)
+    expect(merchant["data"][0]["id"].to_i).to eq(merchant1.id)
+    expect(merchant["data"][0]["attributes"]["name"]).to eq("Toro")
   end
 
 end
