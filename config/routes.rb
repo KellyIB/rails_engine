@@ -1,39 +1,34 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-
-      resources :items, except: [:new, :show, :edit]
-      resources :items, only: [:show] do
-        member do
-          get 'merchant', to: "merchant_items#show"
+      namespace :items do
+        get 'find_all', to: "find#index"
+        get 'find', to: "find#show"
+      end
+      resources :items, except: [:new, :edit] do
+        scope module: "items" do
+          resources :merchants, only: [:index]
         end
       end
-
-      resources :merchants, except: [:new, :edit]
-      resources :merchants, only: [:index] do
-        member do
-          get 'items', to: "merchant_items#index"
-        end
+      namespace :merchants do
+        get 'find_all', to: "find#index"
+        get 'find', to: "find#show"
       end
 
+      resources :merchants, except: [:new, :edit] do
+        scope module: "merchants" do
+          resources :items, only: [:index]
+        end
+      end
     end
   end
 end
-#
-# namespace :api do
-#   namespace :v1 do
-#     resources :items, except: [:new, :edit]
-#     resources :items do
-#       member do
-#         get 'merchant'
-#       end
-#     end
-#     resources :merchants, except: [:new, :edit]
-#     resources :merchants do
-#       member do
-#         get 'items'
-#       end
-#     end
-#
-#   end
+
+
+# member do
+#   get 'merchant', to: "merchant_items#show"
+# end
+# end
+# member do
+#   get 'items', to: "merchant_items#index"
 # end

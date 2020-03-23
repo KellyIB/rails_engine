@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Items API" do
   before :each do
+    Merchant.delete_all
     @merchant = create(:merchant)
   end
   it 'send a list of items' do
@@ -70,7 +71,7 @@ RSpec.describe "Items API" do
   it "can find the merchant an item belongs to" do
     item = create(:item, merchant_id: @merchant.id)
 
-    get "/api/v1/items/#{item.id}/merchant"
+    get "/api/v1/items/#{item.id}/merchants"
 
     expect(response).to be_successful
 

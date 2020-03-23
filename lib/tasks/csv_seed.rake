@@ -13,18 +13,19 @@ desc "clear and seed development database, convert cents to dollars, and reset p
 #db:reset or destroy_all/delete_all? system "rake db:reset"
     puts "Destroying all previous records.", ""
 
-    system "rake db:reset"
-    # Transaction.delete_all
-    # InvoiceItem.delete_all
-    # Invoice.delete_all
-    # Item.delete_all
-    # Merchant.delete_all
-    # Customer.delete_all
-    #
-    # puts "Resetting primary keys.", ""
-    # ActiveRecord::Base.connection.tables.each do |t|
-    #   ActiveRecord::Base.connection.reset_pk_sequence!(t)
-    # end
+    # system "rake db:reset"
+    #clear versus drop?
+    Transaction.delete_all
+    InvoiceItem.delete_all
+    Invoice.delete_all
+    Item.delete_all
+    Merchant.delete_all
+    Customer.delete_all
+
+    puts "Resetting primary keys.", ""
+    ActiveRecord::Base.connection.tables.each do |t|
+      ActiveRecord::Base.connection.reset_pk_sequence!(t)
+    end
 
     puts "Reading customer data.", ""
     CSV.foreach("db/data/customers.csv", headers: true, header_converters: :symbol, converters: :all) do |row|
@@ -32,7 +33,6 @@ desc "clear and seed development database, convert cents to dollars, and reset p
     end
     # next_value = (Customer.last.id + 1)
     next_value = (Customer.order(id: :desc).limit(1).pluck(:id)[0]) + 1
-
     ActiveRecord::Base.connection.execute("alter sequence customers_id_seq restart with #{next_value};")
     puts "Customers created.", ""
 

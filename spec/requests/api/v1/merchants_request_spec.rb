@@ -2,15 +2,14 @@ require 'rails_helper'
 
 describe "Merchants API" do
   it "sends a list of merchants" do
+    Merchant.delete_all
     create_list(:merchant, 3)
 
     get '/api/v1/merchants'
     merchants = JSON.parse(response.body)
 
-
     expect(response).to be_successful
     expect(merchants["data"].count).to eq(3)
-
   end
 
   it "can get one merchant by its id" do
@@ -51,6 +50,7 @@ describe "Merchants API" do
   end
 
   it "can destroy an merchant" do
+    Merchant.delete_all
      merchant_id = create(:merchant).id
 
     expect(Merchant.count).to eq(1)
@@ -63,21 +63,70 @@ describe "Merchants API" do
   end
 
   it "can list all of a merchants items" do
+    Merchant.delete_all
      merchant = create(:merchant)
      10.times do
        create(:item, merchant_id: merchant.id)
      end
-
 
     expect(merchant.items.count).to eq(10)
 
     get "/api/v1/merchants/#{merchant.id}/items"
 
     expect(response).to be_successful
+
     items = JSON.parse(response.body)
 
     expect(items["data"].count).to eq(merchant.items.count)
     expect(items["data"][0]["id"].to_i).to eq(merchant.items.first.id)
     expect(items["data"][9]["id"].to_i).to eq(merchant.items.last.id)
   end
+  it 'can find a list of merchants that contain a fragment, case insensitive' do
+    Merchant.delete_all
+      merchant1 = Merchant.create(name: "Toro")
+      merchant2 = Merchant.create(name: "Bordo")
+      merchant3 = Merchant.create(name: "Foromor")
+      merchant4 = Merchant.create(name: "Boromire")
+      merchant5 = Merchant.create(name: "Born")
+      merchant6 = Merchant.create(name: "Bord")
+      merchant7 = Merchant.create(name: "Borimor")
+      merchant8 = Merchant.create(name: "Doromire")
+    expect(Merchant.all.count).to eq(8)
+
+    get "/api/v1/merchants/find_all?name=oro"
+
+    expect(response).to be_successful
+    merchants = JSON.parse(response.body)
+
+    expect(merchants["data"].count).to eq(4)
+    expect(merchants["data"][0]["id"].to_i).to eq(merchant1.id)
+    expect(merchants["data"][1]["id"].to_i).to eq(merchant3.id)
+    expect(merchants["data"][2]["id"].to_i).to eq(merchant4.id)
+    expect(merchants["data"][3]["id"].to_i).to eq(merchant8.id)
+
+
+    names = merchants["data"].map do |merchant|
+      merchant["attributes"]["name"]
+    end
+
+    expect(names.sort).to eq(["Boromire", "Doromire", "Foromor", "Toro"])
+  end
+
+  xit 'can find the first merchant that contain a fragment, case insensitive' do
+
+    expect(Merchant.all.count).to eq(10)
+
+    get "/api/v1/merchants/find_all?name=oro"
+
+    expect(response).to be_successful
+    merchants = JSON.parse(response.body)
+
+    expect(merchants["data"].count).to eq(1)
+    expect(merchants["data"][0]["id"].to_i).to eq(@merchant1.id)
+
+    names = merchants.map {|merchant|merchant[:attributes][:name]}
+
+    expect(names.sort).to eq(["Toro"])
+  end
+
 end
